@@ -6,16 +6,16 @@ env:
     - ROSWELL_BRANCH=master
     - ROSWELL_INSTALL_DIR=$HOME/.roswell
   matrix:
-    # - METHOD=brew
-    # - METHOD=ci LISP=sbcl/1.1.14
-    # - METHOD=ci LISP=ccl32
-    # - METHOD=ci LISP=sbcl
-    # - METHOD=ci LISP=ecl
-    # - METHOD=ci LISP=clisp
-    # - METHOD=ci LISP=alisp
-    # - METHOD=ci LISP=abcl
-    # - METHOD=ci LISP=ccl
-    # - METHOD=ci LISP=cmucl
+    - METHOD=brew
+    - METHOD=ci LISP=sbcl/1.1.14
+    - METHOD=ci LISP=ccl32
+    - METHOD=ci LISP=sbcl
+    - METHOD=ci LISP=ecl
+    - METHOD=ci LISP=clisp
+    - METHOD=ci LISP=alisp
+    - METHOD=ci LISP=abcl
+    - METHOD=ci LISP=ccl
+    - METHOD=ci LISP=cmucl
     - METHOD=ci LISP=sbcl-bin
   
 os:
@@ -87,10 +87,6 @@ script:
   - if [ "$METHOD" = "brew" ] || [ "$METHOD" = "ci" ]; then ros version=t run; fi
   - if [ "$METHOD" = "brew" ] || [ "$METHOD" = "ci" ]; then ros config; fi
   - if [ "$METHOD" = "brew" ] || [ "$METHOD" = "ci" ]; then ros install prove; fi
-  - find ~/.roswell/share/common-lisp/source/roswell/
-  - test -e lisp/template.ros
-  - test -e ~/.roswell/share/common-lisp/source/roswell/template.ros
-  - which ros
   - if [ "$METHOD" = "brew" ] || [ "$METHOD" = "ci" ]; then run-prove roswell-test.asd 2>&1 ; fi
   - if [ "$METHOD" = "ci" ]; then ros -q run && [`ros -q run 2>&1` == ""]; fi
   - if [ "$METHOD" = "ci" ] && [ "$LISP" = "sbcl-bin" ]; then [`ros -e "(ros:ignore-shebang)" -e '(loop for x in (directory "src/lisp/*.ros") do (load x))' 2>&1` == ""]; fi
