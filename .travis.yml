@@ -75,7 +75,6 @@ script:
   - if [ "$METHOD" = "documents" ]; then rm documents/man/* documents/html/*; fi
   - if [ "$METHOD" = "documents" ]; then sh bootstrap;./configure --enable-manual-generation --enable-html-generation;make;sudo make install; fi
   - if [ "$METHOD" = "brew" ]; then brew install roswell --HEAD; fi
-  # - if [ "$METHOD" = "ci" ]; then sh ./scripts/install-for-ci.sh; fi
   - [ "$METHOD" = "ci" ] && sh bootstrap
   - [ "$METHOD" = "ci" ] && ./configure --prefix ~/.local/
   - [ "$METHOD" = "ci" ] && make
