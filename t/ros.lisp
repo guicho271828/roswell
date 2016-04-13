@@ -98,13 +98,13 @@
    "fmt"
    ;;"build"
    ("init" "testinit" "testinit2.ros")))
-)
-(!e "ros init")
-
 (ok (probe-file "testinit.ros"))
 (ensure-delete-file "testinit.ros")
 (ok (probe-file "testinit2.ros"))
 (ensure-delete-file "testinit2.ros")
+)
+
+(!e "ros init")
 
 (ok (probe-file "t/test-template"))
 (! "ros template rm test-template")
