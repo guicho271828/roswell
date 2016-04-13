@@ -40,7 +40,7 @@
 
 (plan nil)
 
-#+nil (
+
 (ok (getenv "USER") "(getenv \"USER\")")
 (ok (not (getenv "NON_EXITS_ENV")) "(getenv \"NON_EXITS_ENV\") return nil if key not exist")
 #-(or allegro abcl);;pass when sbcl ccl clisp
@@ -102,7 +102,6 @@
 (ensure-delete-file "testinit.ros")
 (ok (probe-file "testinit2.ros"))
 (ensure-delete-file "testinit2.ros")
-)
 
 (!e "ros init")
 
