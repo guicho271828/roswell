@@ -16,6 +16,7 @@ exec ros +Q -m roswell -L sbcl-bin -- $0 "$@"
 
 (in-package :ros.sub.init)
 
+(trace usage read-and-reprint-string find-template-or-lose render bind-arguments render-variables render-variable)
 (defun usage ()
   (format *error-output* "Usage: ros init FILENAME [TEMPLATE [ARGS...]]")
   (format *error-output* "
@@ -29,22 +30,26 @@ When FILENAME is \"-\", it renders the output to stdout.
 (defun main (main cmd &optional filename (template (when filename (find-template-or-lose filename))) &rest argv)
   (assert (equal main "main"))
   (assert (equal cmd "init"))
+  (setf *trace-output* *error-output*)
+  (print *trace-output* *error-output*)
+  (format *error-output* "~@{~a: ~a ~_~}~%" :filename filename :template template :argv argv)
+  (finish-output *error-output*)
   (match filename
-   (nil
-    (usage))
-   ("-"
-    (let ((*filename* "STDOUT"))
-      (render *standard-output* template
-              (mapcar #'read-and-reprint-string argv))))
-   (_
-    (let* ((filename (pathname filename))
-           (*filename* (if (not (pathname-type filename))
-                           (make-pathname :type "ros" :defaults filename)
-                           filename)))
-      (with-open-file (s *filename* :direction :output :if-exists :supersede :if-does-not-exist :create)
-        (render s template
-                (mapcar #'read-and-reprint-string argv)))
-      (format t "Instantiated a template ~a into ~a~%" template *filename*)))))
+    (nil
+     (usage))
+    ("-"
+     (let ((*filename* "STDOUT"))
+       (render *standard-output* template
+               (mapcar #'read-and-reprint-string argv))))
+    (_
+     (let* ((filename (pathname filename))
+            (*filename* (if (not (pathname-type filename))
+                            (make-pathname :type "ros" :defaults filename)
+                            filename)))
+       (with-open-file (s *filename* :direction :output :if-exists :supersede :if-does-not-exist :create)
+         (render s template
+                 (mapcar #'read-and-reprint-string argv)))
+       (format t "Instantiated a template ~a into ~a~%" template *filename*)))))
 
 (defun read-and-reprint-string (string)
   (princ-to-string (read-from-string string)))
@@ -54,6 +59,8 @@ When FILENAME is \"-\", it renders the output to stdout.
 
 (defun find-template-or-lose (filename)
   "try to find a tempalte with a given filename, return \"default\" when failed"
+  (print filename)
+  (print filename *error-output*)
   (let ((path (merge-pathnames filename *template-dir*)))
     (if (probe-file path)
         filename

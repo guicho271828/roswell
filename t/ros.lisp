@@ -6,12 +6,15 @@
   (:shadowing-import-from :ros :run))
 (in-package :roswell-test)
 
-(ql:quickload :uiop)
+(ql:quickload :uiop :silent t)
 
 (defun ! (r &optional expected)
   (if expected
-      (is (string-trim #.(format nil " ~%")
-                       (uiop:run-program r :output :string :error-output *error-output*))
+      (is (print (string-trim #(#\Space #\Tab #\Newline #\Return #\linefeed)
+                              (with-output-to-string (s)
+                                (uiop:run-program r
+                                                  :output (make-broadcast-stream s *standard-output*)
+                                                  :error-output *error-output*))))
           expected r)
       (ok (ignore-errors
             (or (uiop:run-program r :error-output *error-output*
@@ -20,8 +23,8 @@
           r)))
 
 (defun !e (r)
-  (is-error (uiop:run-program r :output :string)
-            'error (format nil "~a should fail" r)))
+  (is-error (uiop:run-program r :output *standard-output* :error-output *error-output*)
+            'error (format nil "~a expected to fail" r)))
 
 (defun !-tree (tree)
   (labels ((rec (current stack)
@@ -37,6 +40,7 @@
 
 (plan nil)
 
+#+nil (
 (ok (getenv "USER") "(getenv \"USER\")")
 (ok (not (getenv "NON_EXITS_ENV")) "(getenv \"NON_EXITS_ENV\") return nil if key not exist")
 #-(or allegro abcl);;pass when sbcl ccl clisp
@@ -94,7 +98,7 @@
    "fmt"
    ;;"build"
    ("init" "testinit" "testinit2.ros")))
-
+)
 (!e "ros init")
 
 (ok (probe-file "testinit.ros"))
