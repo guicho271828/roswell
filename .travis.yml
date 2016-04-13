@@ -75,11 +75,11 @@ script:
   - if [ "$METHOD" = "documents" ]; then rm documents/man/* documents/html/*; fi
   - if [ "$METHOD" = "documents" ]; then sh bootstrap;./configure --enable-manual-generation --enable-html-generation;make;sudo make install; fi
   - if [ "$METHOD" = "brew" ]; then brew install roswell --HEAD; fi
-  - [ "$METHOD" = "ci" ] && sh bootstrap
-  - [ "$METHOD" = "ci" ] && ./configure --prefix ~/.local/
-  - [ "$METHOD" = "ci" ] && make
-  - [ "$METHOD" = "ci" ] && make install
-  - [ "$METHOD" = "ci" ] && which ros
+  - test "$METHOD" = "ci" && sh bootstrap
+  - test "$METHOD" = "ci" && ./configure --prefix ~/.local/
+  - test "$METHOD" = "ci" && make
+  - test "$METHOD" = "ci" && make install
+  - test "$METHOD" = "ci" && which ros
   - if [ "$METHOD" = "cross" ] || [ "$METHOD" = "valgrind" ] || ([ x$TRAVIS_TAG != x ] && [ $METHOD = debian ]); then
        sh bootstrap;CFLAGS=$XCFLAGS ./configure --disable-dependency-tracking --disable-maintainer-mode;make;sudo make install;make maintainer-clean; fi
   - if [ "$METHOD" = "cross" ]; then CC=$XCC ./configure ${PREFIX} ${HOST};make; fi
